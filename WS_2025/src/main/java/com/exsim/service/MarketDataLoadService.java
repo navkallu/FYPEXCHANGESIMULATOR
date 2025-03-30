@@ -32,18 +32,15 @@ public class MarketDataLoadService {
 
     }
 
-    public static double getBidPx(String symbol){
+    public static double getBidprice(String symbol){
 
-        return (getMarketData(symbol)).getBidpx();
+        return (getMarketData(symbol)).getBidprice();
     }
 
-    public static double getAskPx(String symbol){
+    public static double getAskprice(String symbol){
 
-        return (getMarketData(symbol)).getAskpx();
+        return (getMarketData(symbol)).getAskprice();
     }
 
-    public static double getTick(String symbol){
 
-        return (getMarketData(symbol)).getTicksize();
-    }
 }

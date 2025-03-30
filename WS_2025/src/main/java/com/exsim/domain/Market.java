@@ -1,5 +1,7 @@
 package com.exsim.domain;
 
+import com.exsim.service.PersistenceService;
+import com.exsim.service.PriceUpdateService;
 import quickfix.field.OrdType;
 import quickfix.field.Side;
 
@@ -10,8 +12,18 @@ public class Market {
 
     private final List<Order> bidOrders = new ArrayList<Order>();
     private final List<Order> askOrders = new ArrayList<Order>();
+    //For Market Data Update
+    private double lastPrice =0.0;
+    private double highPrice =0.0;
+    private double lowPrice =0.0;
+    private double bidPrice =0.0;
+    private double askPrice =0.0;
+    private Map<String,Double> highPriceMap = new HashMap<>();
+    private Map<String,Double> lowPriceMap = new HashMap<>();
+
 
     public boolean match(String symbol, List<Order> orders) {
+        double lastPrice = 0.0;
         while (true) {
             if (bidOrders.size() == 0 || askOrders.size() == 0) {
                 return orders.size() != 0;
@@ -20,7 +32,7 @@ public class Market {
             Order askOrder = askOrders.get(0);
             if (bidOrder.getType() == OrdType.MARKET || askOrder.getType() == OrdType.MARKET
                     || (bidOrder.getPrice() >= askOrder.getPrice())) {
-                match(bidOrder, askOrder);
+                lastPrice = match(bidOrder, askOrder);
                 if (!orders.contains(bidOrder)) {
                     orders.add(0, bidOrder);
                 }
@@ -34,17 +46,101 @@ public class Market {
                 if (askOrder.isClosed()) {
                     askOrders.remove(askOrder);
                 }
-            } else
+                updatePriceData(symbol,lastPrice);
+                //updateMarketDataPersistence(symbol);
+            } else {
+
+               /* if (highPriceMap.containsKey(symbol)) {
+                    highPrice = highPriceMap.get(symbol);
+                    if (lastPrice > highPrice) {
+                        highPrice = lastPrice;
+                        highPriceMap.put(symbol, highPrice);
+                    }
+                } else {
+                    highPriceMap.put(symbol, highPrice);
+                }
+
+                if (lowPriceMap.containsKey(symbol)) {
+                    lowPrice = lowPriceMap.get(symbol);
+                    if (lastPrice < lowPrice) {
+                        lowPrice = lastPrice;
+                        lowPriceMap.put(symbol, lowPrice);
+                    }
+                } else {
+                    lowPriceMap.put(symbol, lowPrice);
+                }
+
+                bidPrice = bidOrders.get(0).getPrice();
+                askPrice = askOrders.get(0).getPrice();
+                //Update Market Data
+                PersistenceService.updateMarketDataDB(symbol, bidPrice, askPrice, highPrice, lowPrice, lastPrice);*/
+
                 return orders.size() != 0;
+            }
         }
     }
 
-    private void match(Order bid, Order ask) {
+    private void updatePriceData(String symbol, double lastPrice) {
+        PriceUpdateService priceUpdateService = PriceUpdateService.getInstance();
+        PriceData pd  = priceUpdateService.getPriceData(symbol);
+        double lowPrice = pd.getLowPrice();
+        double highPrice = pd.getHighPrice();
+
+        if(highPrice < lastPrice){
+            highPrice = lastPrice;
+        }
+
+        if(lowPrice == 0 || lowPrice > lastPrice ){
+            lowPrice = lastPrice;
+        }
+
+        pd.setLowPrice(lowPrice);
+        pd.setHighPrice(highPrice);
+        pd.setLastPrice(lastPrice);
+
+        priceUpdateService.updatePriceData(symbol,pd);
+
+    }
+
+    /*private void updateMarketDataPersistence(String symbol) {
+        if (highPriceMap.containsKey(symbol)) {
+            highPrice = highPriceMap.get(symbol);
+            if (lastPrice > highPrice) {
+                highPrice = lastPrice;
+                highPriceMap.put(symbol, highPrice);
+            }
+        } else {
+            highPrice = 0.00;
+            highPriceMap.put(symbol, highPrice);
+        }
+
+        if (lowPriceMap.containsKey(symbol)) {
+            lowPrice = lowPriceMap.get(symbol);
+            if (lastPrice < lowPrice) {
+                lowPrice = lastPrice;
+                lowPriceMap.put(symbol, lowPrice);
+            }
+        } else {
+            lowPrice = 0.00;
+            lowPriceMap.put(symbol, lowPrice);
+        }
+
+        bidPrice = bidOrders.get(0).getPrice();
+        askPrice = askOrders.get(0).getPrice();
+        //Update Market Data
+        System.out.println("Updating MarketData Persistence symbol ="+symbol + " "+bidPrice + " "+ askPrice+ " "+lastPrice);
+        PersistenceService.updateMarketDataDB(symbol, bidPrice, askPrice, highPrice, lowPrice, lastPrice);
+
+    }*/
+
+    private double match(Order bid, Order ask) {
         double price = ask.getType() == OrdType.LIMIT ? ask.getPrice() : bid.getPrice();
         long quantity = bid.getOpenQuantity() >= ask.getOpenQuantity() ? ask.getOpenQuantity() : bid.getOpenQuantity();
 
         bid.execute(price, quantity);
         ask.execute(price, quantity);
+        return price;
+
     }
 
     public boolean insert(Order order) {

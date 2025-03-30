@@ -98,9 +98,9 @@ public class ExSimApplication implements quickfix.Application {
     }
 
     private void processOrder(Order order) {
-        System.out.println("Bid Price ="+MarketDataLoadService.getBidPx(order.getSymbol())+"\n");
-        System.out.println("Ask Price ="+MarketDataLoadService.getAskPx(order.getSymbol())+"\n");
-        System.out.println("Tick Size ="+MarketDataLoadService.getTick(order.getSymbol())+"\n");
+        //System.out.println("Bid Price ="+MarketDataLoadService.getBidPx(order.getSymbol())+"\n");
+        //System.out.println("Ask Price ="+MarketDataLoadService.getAskPx(order.getSymbol())+"\n");
+
         if (orderMatcher.insert(order)) {
             acceptOrder(order);
 

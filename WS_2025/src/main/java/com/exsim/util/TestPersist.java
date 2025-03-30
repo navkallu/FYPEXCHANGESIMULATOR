@@ -13,16 +13,16 @@ public class TestPersist {
         try {
             // Create sample data
             HashMap<String, MarketData> marketDataMap = new HashMap<>();
-            marketDataMap.put("001.HK", new MarketData("001.HK", 150.25, 150.50, 0.1));
-            marketDataMap.put("002.HK", new MarketData("002.HK", 2500.00, 2505.00, 1));
-            marketDataMap.put("003.HK", new MarketData("003.HK", 200.00, 205.00, 1));
-            marketDataMap.put("004.HK", new MarketData("004.HK", 300.00, 305.00, 1));
-            marketDataMap.put("005.HK", new MarketData("005.HK", 30.00, 35.00, 1));
-            marketDataMap.put("006.HK", new MarketData("006.HK", 150.25, 150.50, 0.1));
-            marketDataMap.put("007.HK", new MarketData("007.HK", 2500.00, 2505.00, 1));
-            marketDataMap.put("008.HK", new MarketData("008.HK", 200.00, 205.00, 1));
-            marketDataMap.put("009.HK", new MarketData("009.HK", 300.00, 305.00, 1));
-            marketDataMap.put("010.HK", new MarketData("010.HK", 30.00, 35.00, 1));
+            marketDataMap.put("001.HK", new MarketData("001.HK", 150.25, 150.50, 0.1 ,0.1,0.1));
+            marketDataMap.put("002.HK", new MarketData("002.HK", 2500.00, 2505.00, 1,1,1));
+            marketDataMap.put("003.HK", new MarketData("003.HK", 200.00, 205.00, 1,1,1));
+            marketDataMap.put("004.HK", new MarketData("004.HK", 300.00, 305.00, 1,1,1));
+            marketDataMap.put("005.HK", new MarketData("005.HK", 30.00, 35.00, 1,1,1));
+            marketDataMap.put("006.HK", new MarketData("006.HK", 150.25, 150.50, 0.1,0.1,01.1));
+            marketDataMap.put("007.HK", new MarketData("007.HK", 2500.00, 2505.00, 1,1,1));
+            marketDataMap.put("008.HK", new MarketData("008.HK", 200.00, 205.00, 1,1,1));
+            marketDataMap.put("009.HK", new MarketData("009.HK", 300.00, 305.00, 1,1,1));
+            marketDataMap.put("010.HK", new MarketData("010.HK", 30.00, 35.00, 1,1,1));
             // Convert to JSON and store in a file
             ObjectMapper objectMapper = new ObjectMapper();
             //objectMapper.writeValue(new File(".\\marketData.json"), marketDataMap);
@@ -37,7 +37,7 @@ public class TestPersist {
 
             // Print loaded data
             loadedMarketDataMap.forEach((symbol, marketData) -> {
-                System.out.println("Symbol: " + symbol + ", Bid Price: " + marketData.getBidpx() + ", Ask Price: " + marketData.getAskpx());
+                System.out.println("Symbol: " + symbol + ", Bid Price: " + marketData.getBidprice() + ", Ask Price: " + marketData.getAskprice());
             });
         } catch (Exception e) {
             e.printStackTrace();

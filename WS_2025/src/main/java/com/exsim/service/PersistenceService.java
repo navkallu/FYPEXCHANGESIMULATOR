@@ -1,8 +1,10 @@
 package com.exsim.service;
 
+import com.exsim.db.MarketDataDAO;
 import com.exsim.db.OrderBookDAO;
 import com.exsim.domain.Market;
 import com.exsim.domain.Order;
+import com.exsim.domain.PriceData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -41,7 +43,7 @@ public class PersistenceService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 String bidOrderJsonString = objectMapper.writeValueAsString(bidOrders);
                 String askOrderJsonString = objectMapper.writeValueAsString(askOrders);
-
+                updateMarketDataPersistence(symbol,bidOrders,askOrders);
                 obDao.insertOrderBook(symbol, bidOrderJsonString, askOrderJsonString);
             }catch(Exception ex){
                 ex.printStackTrace();
@@ -52,4 +54,38 @@ public class PersistenceService {
 
 
     }
-}
+
+    public static void updateMarketDataPersistence(String symbol,List<Order> bidOrders , List<Order> askOrders){
+        System.out.println("updateMarketDataPersistence called");
+
+        PriceUpdateService priceUpdateService = PriceUpdateService.getInstance();
+        PriceData pd  = priceUpdateService.getPriceData(symbol);
+        double lowprice = pd.getLowPrice();
+        double highprice = pd.getHighPrice();
+        double lastprice = pd.getLastPrice();
+
+        if(!priceUpdateService.isDataMatched(symbol)){
+            System.out.println("updateMarketDataPersistence returned");
+            return;
+        }
+        double bidprice = 0.0;
+        double askprice = 0.0;
+        if(bidOrders.size()>0){
+            bidprice = bidOrders.get(0).getPrice();
+        }
+        if(askOrders.size()>0){
+            askprice = askOrders.get(0).getPrice();
+        }
+
+        MarketDataDAO mktDao = new MarketDataDAO();
+        try {
+            System.out.println("Calling insertMarketData");
+            mktDao.insertMarketData(symbol, bidprice, askprice, highprice, lowprice,lastprice );
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+
+    }
+
+    }
+

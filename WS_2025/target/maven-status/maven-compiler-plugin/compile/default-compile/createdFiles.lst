@@ -11,6 +11,7 @@ com\exsim\ordersender\LogonEvent.class
 com\exsim\domain\Market.class
 com\exsim\ordersender\ui\OrderEntryPanel$SubmitActivator.class
 com\exsim\ordersender\ui\TesterFrame$4.class
+com\exsim\service\PriceUpdateService.class
 com\exsim\ordersender\ui\CancelReplacePanel.class
 com\exsim\ordersender\ui\CancelReplacePanel$CancelListener.class
 com\exsim\ordersender\TwoWayMap.class
@@ -21,6 +22,7 @@ com\exsim\domain\MarketData.class
 com\exsim\ordersender\OrderSide.class
 com\exsim\ordersender\ExecutionTableModel.class
 com\exsim\db\Setup.class
+com\exsim\db\MarketDataDAO.class
 com\exsim\ordersender\ui\TesterPanel.class
 com\exsim\ordersender\ui\OrderPanel.class
 com\exsim\ordersender\OrderSender.class
@@ -43,6 +45,7 @@ com\exsim\util\IdGenerator.class
 com\exsim\ordersender\ui\ExecutionPanel.class
 com\exsim\ordersender\ui\OrderEntryPanel$SubmitListener.class
 com\exsim\ordersender\OrderType.class
+com\exsim\domain\PriceData.class
 com\exsim\ordersender\Order.class
 com\exsim\ordersender\ui\ExecutionTable.class
 com\exsim\app\SimulatorMain.class
