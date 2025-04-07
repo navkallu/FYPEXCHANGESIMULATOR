@@ -15,6 +15,10 @@ import quickfix.SessionSettings;
 import quickfix.SocketAcceptor;
 
 public class SimulatorMain {
+    public static String EXCHANGE = "";
+    public static String DBURL = "";
+    public static String DBUSER = "";
+    public static String DBPASSWORD = "";
     public static void main(String[] args) {
         try {
             InputStream inputStream = null;
@@ -28,7 +32,16 @@ public class SimulatorMain {
                 return;
             }
             SessionSettings settings = new SessionSettings(inputStream);
+
             //Create Database table
+            EXCHANGE = settings.getString("Exchange");
+            DBURL = settings.getString("DBURL");
+            DBUSER = settings.getString("DBUSER");
+            DBPASSWORD = settings.getString("DBPASSWORD");
+            System.out.println("EXCHANGE Name"+EXCHANGE);
+            System.out.println("DBUSer Name"+DBURL);
+            System.out.println("DBUSer Name"+DBUSER);
+            System.out.println("DBPASSWORD Password"+DBPASSWORD);
             Setup dbSetup = new Setup();
             dbSetup.createTable();
 

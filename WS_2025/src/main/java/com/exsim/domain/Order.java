@@ -3,6 +3,9 @@ package com.exsim.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import quickfix.field.Side;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
 public class Order {
     private final double price;
     private long openQuantity;
@@ -129,6 +132,14 @@ public class Order {
         executedQuantity += quantity;
         lastExecutedPrice = price;
         lastExecutedQuantity = quantity;
+    }
+
+    private String entryTime(){
+        LocalTime now = LocalTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+        String formattedTime = now.format(formatter);
+        return formattedTime;
+
     }
 
     public String toString() {

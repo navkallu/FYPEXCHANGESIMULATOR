@@ -1,6 +1,7 @@
 package com.exsim.app;
 
 import com.exsim.domain.Order;
+import com.exsim.service.ExchangeRuleValidator;
 import com.exsim.service.MatchingService;
 import com.exsim.util.IdGenerator;
 import com.exsim.service.MarketDataLoadService;
@@ -11,8 +12,9 @@ import quickfix.fix42.*;
 
 import java.util.ArrayList;
 public class ExSimApplication implements quickfix.Application {
-    private final MatchingService orderMatcher = new MatchingService();
+    private final MatchingService orderMatcher = MatchingService.getInstance();;
     private final IdGenerator generator = new IdGenerator();
+    private final ExchangeRuleValidator exchangeRuleValidator = new ExchangeRuleValidator();
 
     public void fromAdmin(Message message, SessionID sessionId) throws FieldNotFound,
             IncorrectDataFormat, IncorrectTagValue, RejectLogon {
@@ -60,6 +62,14 @@ public class ExSimApplication implements quickfix.Application {
 
             Order order = new Order(clOrdId, symbol, senderCompId, targetCompId, side, ordType,
                     price, (int) qty, origClordId);
+
+            //Exchange Validations
+            if(!exchangeRuleValidator.validateOrder(SimulatorMain.EXCHANGE,order)){
+                System.out.println("Order validation failed");
+                throw new RuntimeException("Limit order Price Invalid");
+                //System.out.println("Order validation failed");
+            }
+
             order.setOrderId(clOrdId);
 
             if("D".equals(msgType)) {
@@ -91,7 +101,8 @@ public class ExSimApplication implements quickfix.Application {
         fixOrder.setString(Text.FIELD, message);
 
         try {
-            Session.sendToTarget(fixOrder, senderCompId, targetCompId);
+            //Session.sendToTarget(fixOrder, senderCompId, targetCompId);
+            Session.sendToTarget(fixOrder, targetCompId, senderCompId);
         } catch (SessionNotFound e) {
             e.printStackTrace();
         }

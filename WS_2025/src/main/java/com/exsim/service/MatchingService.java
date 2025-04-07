@@ -10,6 +10,19 @@ public class MatchingService {
 
     private final HashMap<String, Market> markets = new HashMap<String, Market>();
 
+    private static MatchingService instance;
+
+    // Private constructor to prevent instantiation
+    private MatchingService() {}
+
+    // Public method to get the singleton instance
+    public static MatchingService getInstance() {
+        if (instance == null) {
+            instance = new MatchingService();
+        }
+        return instance;
+    }
+
     private Market getMarket(String symbol) {
         Market m = markets.get(symbol);
         if (m == null) {

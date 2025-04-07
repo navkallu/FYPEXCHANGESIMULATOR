@@ -9,11 +9,13 @@ public class Setup {
 
         String dropTableOrderBookSQL = "DROP TABLE IF EXISTS orderbook;";
         String createTableOrderBookSQL = "CREATE TABLE IF NOT EXISTS orderbook (" +
+                "exchange VARCHAR(10) , " +
                 "symbol VARCHAR(10) NOT NULL PRIMARY KEY, " +
                 "bid_orders CLOB, " +
                 "ask_orders CLOB)";
         String dropTableMarketDataSQL = "DROP TABLE IF EXISTS marketdata;";
         String createTableMarketDataSQL = "CREATE TABLE marketdata (" +
+                "exchange VARCHAR(10) , " +
                 "symbol VARCHAR(255), " +
                 "bidprice DECIMAL(15, 2), " +
                 "askprice DECIMAL(15, 2), " +
