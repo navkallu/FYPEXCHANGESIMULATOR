@@ -63,6 +63,10 @@ public class PersistenceService {
         double lowprice = pd.getLowPrice();
         double highprice = pd.getHighPrice();
         double lastprice = pd.getLastPrice();
+        long executedQty = pd.getLastExecutedQty();
+        long totalExecutedQty = pd.getTotalExecutedQty();
+        double avgPrice = pd.getAvgPrice();
+        String isOpen = pd.getOpenOrders();
 
         if(!priceUpdateService.isDataMatched(symbol)){
             System.out.println("updateMarketDataPersistence returned");
@@ -76,11 +80,16 @@ public class PersistenceService {
         if(askOrders.size()>0){
             askprice = askOrders.get(0).getPrice();
         }
+        //Update Open Status
+        if (bidOrders.size() == 0 && askOrders.size() == 0) {
+            isOpen = "N";
+        }
+
 
         MarketDataDAO mktDao = new MarketDataDAO();
         try {
             System.out.println("Calling insertMarketData");
-            mktDao.insertMarketData(symbol, bidprice, askprice, highprice, lowprice,lastprice );
+            mktDao.insertMarketData(symbol, bidprice, askprice, highprice, lowprice,lastprice,executedQty,totalExecutedQty,avgPrice, isOpen);
         }catch(Exception ex){
             ex.printStackTrace();
         }

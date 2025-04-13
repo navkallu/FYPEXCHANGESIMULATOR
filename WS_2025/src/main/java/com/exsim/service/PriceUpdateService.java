@@ -30,6 +30,11 @@ public class PriceUpdateService {
         pd.setHighPrice(0.0);
         pd.setLowPrice(0.0);
         pd.setLastPrice(0.0);
+        pd.setLastExecutedQty(0);
+        pd.setTotalExecutedQty(0);
+        pd.setAvgPrice(0.0);
+        pd.setOpenOrders("Y");
+
         priceDataMap.put(symbol, pd);
         return pd;
     }

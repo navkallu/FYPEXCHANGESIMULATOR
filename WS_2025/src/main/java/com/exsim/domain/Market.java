@@ -23,7 +23,7 @@ public class Market {
 
 
     public boolean match(String symbol, List<Order> orders) {
-        double lastPrice = 0.0;
+        LastQtyPrice lastQtyPrice = null;
         while (true) {
             if (bidOrders.size() == 0 || askOrders.size() == 0) {
                 return orders.size() != 0;
@@ -32,7 +32,7 @@ public class Market {
             Order askOrder = askOrders.get(0);
             if (bidOrder.getType() == OrdType.MARKET || askOrder.getType() == OrdType.MARKET
                     || (bidOrder.getPrice() >= askOrder.getPrice())) {
-                lastPrice = match(bidOrder, askOrder);
+                lastQtyPrice = match(bidOrder, askOrder);
                 if (!orders.contains(bidOrder)) {
                     orders.add(0, bidOrder);
                 }
@@ -46,45 +46,22 @@ public class Market {
                 if (askOrder.isClosed()) {
                     askOrders.remove(askOrder);
                 }
-                updatePriceData(symbol,lastPrice);
+                if(null != lastQtyPrice) {
+                    updatePriceData(symbol, lastQtyPrice.getLastPrice(),lastQtyPrice.getLastExecutedQty());
+                }
                 //updateMarketDataPersistence(symbol);
             } else {
-
-               /* if (highPriceMap.containsKey(symbol)) {
-                    highPrice = highPriceMap.get(symbol);
-                    if (lastPrice > highPrice) {
-                        highPrice = lastPrice;
-                        highPriceMap.put(symbol, highPrice);
-                    }
-                } else {
-                    highPriceMap.put(symbol, highPrice);
-                }
-
-                if (lowPriceMap.containsKey(symbol)) {
-                    lowPrice = lowPriceMap.get(symbol);
-                    if (lastPrice < lowPrice) {
-                        lowPrice = lastPrice;
-                        lowPriceMap.put(symbol, lowPrice);
-                    }
-                } else {
-                    lowPriceMap.put(symbol, lowPrice);
-                }
-
-                bidPrice = bidOrders.get(0).getPrice();
-                askPrice = askOrders.get(0).getPrice();
-                //Update Market Data
-                PersistenceService.updateMarketDataDB(symbol, bidPrice, askPrice, highPrice, lowPrice, lastPrice);*/
-
                 return orders.size() != 0;
             }
         }
     }
 
-    private void updatePriceData(String symbol, double lastPrice) {
+    private void updatePriceData(String symbol, double lastPrice, long lastExecutedQty) {
         PriceUpdateService priceUpdateService = PriceUpdateService.getInstance();
         PriceData pd  = priceUpdateService.getPriceData(symbol);
         double lowPrice = pd.getLowPrice();
         double highPrice = pd.getHighPrice();
+        String isOpen = "Y";
 
         if(highPrice < lastPrice){
             highPrice = lastPrice;
@@ -93,53 +70,42 @@ public class Market {
         if(lowPrice == 0 || lowPrice > lastPrice ){
             lowPrice = lastPrice;
         }
+        double avgPrice = pd.getAvgPrice();
+        if(avgPrice <=0){
+            avgPrice = lastPrice;
+        }else{
+            avgPrice =  (avgPrice+lastPrice)/2;
+        }
+
+
+        long totalExecutedQty =  pd.getTotalExecutedQty();
+        totalExecutedQty = totalExecutedQty + lastExecutedQty;
+
+        if (bidOrders.size() == 0 && askOrders.size() == 0) {
+            isOpen = "N";
+        }
 
         pd.setLowPrice(lowPrice);
         pd.setHighPrice(highPrice);
         pd.setLastPrice(lastPrice);
+        pd.setLastExecutedQty(lastExecutedQty);
+        pd.setTotalExecutedQty(totalExecutedQty);
+        pd.setAvgPrice(avgPrice);
+        pd.setOpenOrders(isOpen);
 
         priceUpdateService.updatePriceData(symbol,pd);
 
     }
 
-    /*private void updateMarketDataPersistence(String symbol) {
-        if (highPriceMap.containsKey(symbol)) {
-            highPrice = highPriceMap.get(symbol);
-            if (lastPrice > highPrice) {
-                highPrice = lastPrice;
-                highPriceMap.put(symbol, highPrice);
-            }
-        } else {
-            highPrice = 0.00;
-            highPriceMap.put(symbol, highPrice);
-        }
-
-        if (lowPriceMap.containsKey(symbol)) {
-            lowPrice = lowPriceMap.get(symbol);
-            if (lastPrice < lowPrice) {
-                lowPrice = lastPrice;
-                lowPriceMap.put(symbol, lowPrice);
-            }
-        } else {
-            lowPrice = 0.00;
-            lowPriceMap.put(symbol, lowPrice);
-        }
-
-        bidPrice = bidOrders.get(0).getPrice();
-        askPrice = askOrders.get(0).getPrice();
-        //Update Market Data
-        System.out.println("Updating MarketData Persistence symbol ="+symbol + " "+bidPrice + " "+ askPrice+ " "+lastPrice);
-        PersistenceService.updateMarketDataDB(symbol, bidPrice, askPrice, highPrice, lowPrice, lastPrice);
-
-    }*/
-
-    private double match(Order bid, Order ask) {
+    private LastQtyPrice match(Order bid, Order ask) {
         double price = ask.getType() == OrdType.LIMIT ? ask.getPrice() : bid.getPrice();
         long quantity = bid.getOpenQuantity() >= ask.getOpenQuantity() ? ask.getOpenQuantity() : bid.getOpenQuantity();
 
         bid.execute(price, quantity);
         ask.execute(price, quantity);
-        return price;
+
+
+        return new LastQtyPrice(price,quantity);
 
     }
 

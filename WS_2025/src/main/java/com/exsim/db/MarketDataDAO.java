@@ -7,9 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class MarketDataDAO {
-    public void insertMarketData(String symbol, double bidprice, double askprice,double highprice, double lowprice, double lastprice ) {
-        String mergeSQL = "MERGE INTO marketdata (exchange, symbol, bidprice, askprice, highprice,lowprice ,lastprice) " +
-                "KEY (symbol) VALUES (?,?, ?, ?, ?,?,?)";
+    public void insertMarketData(String symbol, double bidprice, double askprice,double highprice, double lowprice, double lastprice, long executedQty, long totalExecutedQty, double avgPrice, String isOpen  ) {
+        String mergeSQL = "MERGE INTO marketdata (exchange, symbol, bidprice, askprice, highprice,lowprice ,lastprice,executedqty,totalexecutedqty,avgprice,isopen) " +
+                "KEY (symbol) VALUES (?,?, ?, ?, ?,?,?,?,?,?,?)";
 
         String exchange = SimulatorMain.EXCHANGE;
         try (Connection connection = DatabaseConnection.getConnection();
@@ -21,6 +21,10 @@ public class MarketDataDAO {
             preparedStatement.setDouble(5, highprice);
             preparedStatement.setDouble(6, lowprice);
             preparedStatement.setDouble(7, lastprice);
+            preparedStatement.setDouble(8, executedQty);
+            preparedStatement.setDouble(9, totalExecutedQty);
+            preparedStatement.setDouble(10, avgPrice);
+            preparedStatement.setString(11, isOpen);
             preparedStatement.executeUpdate();
             System.out.println("MarketData inserted successfully!");
         } catch (SQLException e) {

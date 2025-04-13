@@ -21,7 +21,11 @@ public class Setup {
                 "askprice DECIMAL(15, 2), " +
                 "highprice DECIMAL(15, 2), " +
                 "lowprice DECIMAL(15, 2), " +
-                "lastprice DECIMAL(15, 2))";
+                "lastprice DECIMAL(15, 2)," +
+                "executedqty BIGINT," +
+                "totalexecutedqty BIGINT," +
+                "avgprice DECIMAL(15,2)," +
+                "isopen VARCHAR(10))";
 
         try (Connection connection = DatabaseConnection.getConnection();
              Statement statement = connection.createStatement()) {
