@@ -1,5 +1,11 @@
 .App {
-  text-align: center;
+  padding: 20px;
+  background-image: url("./assets/bgimg.jpeg");
+  background-size: cover;
+  /* or contain, or specific dimensions */
+  background-position: center center;
+  background-repeat: no-repeat;
+  overflow: hidden;
 }
 
 .App-logo {
@@ -32,6 +38,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

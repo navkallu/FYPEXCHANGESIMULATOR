@@ -1,0 +1,121 @@
+/* Home.css */
+.home-container {
+    padding: 10px 100px;
+    margin: 0 auto;
+}
+
+.welcome-section h1 {
+    color: #fff;
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+.active-stocks-section h2 {
+    color: #fff;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.active-stocks-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.active-stocks-table th,
+.active-stocks-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.active-stocks-table th {
+    /* background-color: #f8f9fa; */
+    font-weight: 600;
+    color: rgba(207, 216, 229, 1);
+}
+
+/* .active-stocks-table tr:hover {
+    background-color: #f5f5f5;
+} */
+
+.status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.status.open {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status.closed {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.orderbutton {
+    background-color: #069bff;
+    color: white;
+    padding: 10px 70px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.tablehead {
+    background-color: rgba(0, 0, 0, 0.35);
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px 0;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .home-container {
+        padding: 15px;
+    }
+
+    .welcome-section h1 {
+        font-size: 1.5rem;
+    }
+
+    .active-stocks-section h2 {
+        font-size: 1.2rem;
+    }
+
+    .active-stocks-table th,
+    .active-stocks-table td {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .home-container {
+        padding: 10px;
+    }
+
+    .active-stocks-table th,
+    .active-stocks-table td {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+
+    .status {
+        padding: 2px 4px;
+        font-size: 0.7rem;
+    }
+}
