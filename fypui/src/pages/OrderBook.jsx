@@ -1,136 +1,69 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./orderbook.css";
 import MarketData from "./MarketData";
 import Home from "./Home";
+import { useAuth } from "../context/AuthContext";
 
-const data = {
-    exchange: "HK",
-    symbols: [
-        {
-            symbol: "001.HK",
-            bid_orders: [
-                {
-                    price: 11,
-                    openQuantity: 100,
-                    orderId: "1743773110703",
-                    entryTime: 1743773110701,
-                    closed: false,
-                    filled: false,
-                },
-                {
-                    price: 10,
-                    openQuantity: 100,
-                    orderId: "1743773103201",
-                    entryTime: 1743773103216,
-                    closed: false,
-                    filled: false,
-                },
-            ],
-            ask_orders: [
-                {
-                    price: 11,
-                    openQuantity: 100,
-                    orderId: "1743773110703",
-                    entryTime: 1743773110701,
-                    closed: false,
-                    filled: false,
-                },
-                {
-                    price: 10,
-                    openQuantity: 100,
-                    orderId: "1743773103201",
-                    entryTime: 1743773103216,
-                    closed: false,
-                    filled: false,
-                },
-            ],
-        },
-        {
-            symbol: "002.HK",
-            bid_orders: [
-                {
-                    price: 11,
-                    openQuantity: 100,
-                    orderId: "1743773110703",
-                    entryTime: 1743773110701,
-                    closed: false,
-                    filled: false,
-                },
-                {
-                    price: 10,
-                    openQuantity: 100,
-                    orderId: "1743773103201",
-                    entryTime: 1743773103216,
-                    closed: false,
-                    filled: false,
-                },
-            ],
-            ask_orders: [
-                {
-                    price: 11,
-                    openQuantity: 100,
-                    orderId: "1743773110703",
-                    entryTime: 1743773110701,
-                    closed: false,
-                    filled: false,
-                },
-                {
-                    price: 10,
-                    openQuantity: 100,
-                    orderId: "1743773103201",
-                    entryTime: 1743773103216,
-                    closed: false,
-                    filled: false,
-                },
-            ],
-        },
-        {
-            symbol: "003HK",
-            bid_orders: [
-                {
-                    price: 11,
-                    openQuantity: 100,
-                    orderId: "1743773110703",
-                    entryTime: 1743773110701,
-                    closed: false,
-                    filled: false,
-                },
-                {
-                    price: 10,
-                    openQuantity: 100,
-                    orderId: "1743773103201",
-                    entryTime: 1743773103216,
-                    closed: false,
-                    filled: false,
-                },
-            ],
-            ask_orders: [
-                {
-                    price: 11,
-                    openQuantity: 100,
-                    orderId: "1743773110703",
-                    entryTime: 1743773110701,
-                    closed: false,
-                    filled: false,
-                },
-                {
-                    price: 10,
-                    openQuantity: 100,
-                    orderId: "1743773103201",
-                    entryTime: 1743773103216,
-                    closed: false,
-                    filled: false,
-                },
-            ],
-        },
-    ],
-};
-
-export default function OrderBook() {
+const OrderBook = () => {
     const [selectedSymbol, setSelectedSymbol] = useState("");
     const [selectedTab, setSelectedTab] = useState("home");
+    const [orderBookData, setOrderBookData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const { token } = useAuth();
 
-    const selectedData = data.symbols.find((s) => s.symbol === selectedSymbol);
+    // Fetch order book data from API
+    useEffect(() => {
+        const fetchOrderBookData = async () => {
+            setIsLoading(true);
+            setError(null);
+            
+            try {
+                const response = await fetch("http://localhost:3001/orderbook", {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch order book data');
+                }
+
+                const data = await response.json();
+                setOrderBookData(data);
+            } catch (err) {
+                setError(err.message);
+                console.error("Error fetching order book:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (token && selectedTab === "orderbook") {
+            fetchOrderBookData();
+        }
+    }, [token, selectedTab]);
+
+    // Parse the stringified order arrays
+    const parseOrders = (ordersString) => {
+        try {
+            return JSON.parse(ordersString);
+        } catch (e) {
+            console.error("Error parsing orders:", e);
+            return [];
+        }
+    };
+
+    // Get symbols for dropdown
+    const symbols = orderBookData.map(item => item.symbol);
+
+    // Get selected symbol data
+    const selectedData = orderBookData.find(item => item.symbol === selectedSymbol);
+
+    // Format timestamp to readable time
+    const formatTime = (timestamp) => {
+        return new Date(timestamp).toLocaleTimeString();
+    };
 
     return (
         <div className="container">
@@ -157,27 +90,33 @@ export default function OrderBook() {
                     </button>
                 </div>
             </div>
+
             {selectedTab === "home" ? (
                 <Home />
             ) : selectedTab === "orderbook" ? (
                 <>
+                    {isLoading && <div className="loading">Loading order book data...</div>}
+                    {error && <div className="error">Error: {error}</div>}
+
                     <div className="selectors">
                         <div>
                             <label>Exchange</label>
                             <select className="dropdown" disabled>
-                                <option value="{data.exchange}">{data.exchange}</option>
+                                <option value="HK">HK</option>
                             </select>
                         </div>
                         <div>
                             <label>Stock Symbol</label>
                             <select
                                 className="dropdown"
+                                value={selectedSymbol}
                                 onChange={(e) => setSelectedSymbol(e.target.value)}
+                                disabled={isLoading}
                             >
                                 <option value="">Select</option>
-                                {data.symbols.map((s) => (
-                                    <option key={s.symbol} value={s.symbol}>
-                                        {s.symbol}
+                                {symbols.map((symbol) => (
+                                    <option key={symbol} value={symbol}>
+                                        {symbol}
                                     </option>
                                 ))}
                             </select>
@@ -197,14 +136,22 @@ export default function OrderBook() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {selectedData?.bid_orders.map((order) => (
-                                        <tr key={order.orderId}>
-                                            <td>{order.orderId}</td>
-                                            <td>{order.price}</td>
-                                            <td>{order.openQuantity}</td>
-                                            <td>{order.entryTime}</td>
+                                    {selectedData ? (
+                                        parseOrders(selectedData.bid_orders).map((order) => (
+                                            <tr key={order.orderId}>
+                                                <td>{order.orderId}</td>
+                                                <td>{order.price.toFixed(2)}</td>
+                                                <td>{order.openQuantity}</td>
+                                                <td>{formatTime(order.entryTime)}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="4">
+                                                {selectedSymbol ? "No orders found" : "Please select a symbol"}
+                                            </td>
                                         </tr>
-                                    )) || <tr><td colSpan="4">No data</td></tr>}
+                                    )}
                                 </tbody>
                             </table>
                         </div>
@@ -220,22 +167,32 @@ export default function OrderBook() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {selectedData?.ask_orders.map((order) => (
-                                        <tr key={order.orderId}>
-                                            <td>{order.orderId}</td>
-                                            <td>{order.price}</td>
-                                            <td>{order.openQuantity}</td>
-                                            <td>{order.entryTime}</td>
+                                    {selectedData ? (
+                                        parseOrders(selectedData.ask_orders).map((order) => (
+                                            <tr key={order.orderId}>
+                                                <td>{order.orderId}</td>
+                                                <td>{order.price.toFixed(2)}</td>
+                                                <td>{order.openQuantity}</td>
+                                                <td>{formatTime(order.entryTime)}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="4">
+                                                {selectedSymbol ? "No orders found" : "Please select a symbol"}
+                                            </td>
                                         </tr>
-                                    )) || <tr><td colSpan="4">No data</td></tr>}
+                                    )}
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                </>) : (
+                </>
+            ) : (
                 <MarketData />
             )}
-
         </div>
     );
-}
+};
+
+export default OrderBook;

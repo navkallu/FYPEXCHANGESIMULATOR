@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { signup, login } from '../services/authAPI';
 import './AuthForm.css';
 
 const AuthForm = () => {
     const [isLogin, setIsLogin] = useState(false);
     const [formData, setFormData] = useState({
-        firstName: 'John',
-        lastName: 'Smith',
-        email: 'johnsmith14@gmail.com',
+        firstName: '',
+        lastName: '',
+        email: '',
         password: ''
     });
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -16,12 +21,41 @@ const AuthForm = () => {
             ...prev,
             [name]: value
         }));
+        setError('');
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission here
-        console.log(formData);
+        setIsLoading(true);
+        setError('');
+
+        try {
+            let response;
+            if (isLogin) {
+                response = await login({
+                    email: formData.email,
+                    password: formData.password
+                });
+            } else {
+                response = await signup({
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    email: formData.email,
+                    password: formData.password
+                });
+            }
+
+            // Save token and user data
+            localStorage.setItem('token', response.token);
+            localStorage.setItem('user', JSON.stringify(response.user));
+            
+            // Redirect to dashboard or home page
+            navigate('/dashboard');
+        } catch (err) {
+            setError(err.message || 'An error occurred');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -42,6 +76,8 @@ const AuthForm = () => {
                     </div>
                 )}
 
+                {error && <div className="error-message">{error}</div>}
+
                 <form onSubmit={handleSubmit} className='form'>
                     {!isLogin && (
                         <div className='fullname'>
@@ -53,6 +89,7 @@ const AuthForm = () => {
                                     value={formData.firstName}
                                     onChange={handleChange}
                                     placeholder="Enter first name"
+                                    required
                                 />
                             </div>
                             <div className="form-group">
@@ -63,6 +100,7 @@ const AuthForm = () => {
                                     value={formData.lastName}
                                     onChange={handleChange}
                                     placeholder="Enter last name"
+                                    required
                                 />
                             </div>
                         </div>
@@ -76,6 +114,7 @@ const AuthForm = () => {
                             value={formData.email}
                             onChange={handleChange}
                             placeholder="Enter email"
+                            required
                         />
                     </div>
 
@@ -87,6 +126,8 @@ const AuthForm = () => {
                             value={formData.password}
                             onChange={handleChange}
                             placeholder="Enter password"
+                            required
+                            minLength="6"
                         />
                     </div>
 
@@ -101,8 +142,12 @@ const AuthForm = () => {
                             <span>Change method</span>
                         </div>
                         <div className="form-groups">
-                            <button type="submit" className="auth-button">
-                                {isLogin ? 'Log In' : 'Create account'}
+                            <button 
+                                type="submit" 
+                                className="auth-button"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? 'Processing...' : (isLogin ? 'Log In' : 'Create account')}
                             </button>
                         </div>
                     </div>

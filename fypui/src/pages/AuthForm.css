@@ -2,6 +2,12 @@
 .auth-container {
     min-height: 100vh;
     padding: 20px;
+    background-image: url("../assets/bgimg.jpeg");
+    background-size: cover;
+    /* or contain, or specific dimensions */
+    background-position: center center;
+    background-repeat: no-repeat;
+    overflow: hidden;
 }
 
 .title {

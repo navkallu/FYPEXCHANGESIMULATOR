@@ -1,94 +1,98 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './marketdata.css';
-
-const marketDataJSON = {
-    "exchange": "HK",
-    "symbols": [
-        {
-            "symbol": "001.HK",
-            "bidprice": 11.0,
-            "askprice": 100,
-            "highprice": 12.0,
-            "lowprice": 9.0,
-            "lastprice": 9.0
-        },
-        {
-            "symbol": "002.HK",
-            "bidprice": 11.0,
-            "askprice": 100,
-            "highprice": 12.0,
-            "lowprice": 9.0,
-            "lastprice": 9.0
-        },
-        {
-            "symbol": "003.HK",
-            "bidprice": 11.0,
-            "askprice": 100,
-            "highprice": 12.0,
-            "lowprice": 9.0,
-            "lastprice": 9.0
-        },
-        {
-            "symbol": "004.HK",
-            "bidprice": 11.0,
-            "askprice": 100,
-            "highprice": 12.0,
-            "lowprice": 9.0,
-            "lastprice": 9.0
-        }
-    ]
-};
+import { useAuth } from '../context/AuthContext';
 
 const MarketData = () => {
-    const [selectedExchange, setSelectedExchange] = useState('HK');
+    const [marketData, setMarketData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const { token } = useAuth();
 
-    const handleExchangeChange = (e) => {
-        setSelectedExchange(e.target.value);
-    };
+    // Fetch market data from API
+    useEffect(() => {
+        const fetchMarketData = async () => {
+            setIsLoading(true);
+            setError(null);
+            
+            try {
+                const response = await fetch("http://localhost:3001/marketdata", {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch market data');
+                }
+
+                const data = await response.json();
+                setMarketData(data);
+            } catch (err) {
+                setError(err.message);
+                console.error("Error fetching market data:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (token) {
+            fetchMarketData();
+        }
+    }, [token]);
 
     return (
         <div className="container">
             <div className="selectors">
                 <div>
                     <label>Exchange</label>
-                    <select
-                        className="dropdown"
-                        value={selectedExchange}
-                        onChange={handleExchangeChange}
-                    >
+                    <select className="dropdown" disabled>
                         <option value="HK">HK</option>
                     </select>
                 </div>
             </div>
 
-            <div className="order-book">
-                <table>
-                    <thead style={{ color: '#1daeff' }}>
-                        <tr>
-                            <th>Exchange</th>
-                            <th>Symbol</th>
-                            <th>Best Bid</th>
-                            <th>Best Ask</th>
-                            <th>Highest Executed Price</th>
-                            <th>Lowest Executed Price</th>
-                            <th>Last Executed Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {marketDataJSON.symbols.map((item, index) => (
-                            <tr key={index}>
-                                <td>{marketDataJSON.exchange}</td>
-                                <td>{item.symbol}</td>
-                                <td>{item.bidprice}</td>
-                                <td>{item.askprice}</td>
-                                <td>{item.highprice}</td>
-                                <td>{item.lowprice}</td>
-                                <td>{item.lastprice}</td>
+            {isLoading ? (
+                <div className="loading">Loading market data...</div>
+            ) : error ? (
+                <div className="error">Error: {error}</div>
+            ) : (
+                <div className="order-book">
+                    <table>
+                        <thead style={{ color: '#1daeff' }}>
+                            <tr>
+                                <th>Exchange</th>
+                                <th>Symbol</th>
+                                <th>Best Bid</th>
+                                <th>Best Ask</th>
+                                <th>High Price</th>
+                                <th>Low Price</th>
+                                <th>Last Price</th>
+                                <th>Executed Qty</th>
+                                <th>Total Executed Qty</th>
+                                <th>Avg Price</th>
+                                <th>Status</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            {marketData.map((item, index) => (
+                                <tr key={index}>
+                                    <td>{item.exchange}</td>
+                                    <td>{item.symbol}</td>
+                                    <td>{item.bidprice}</td>
+                                    <td>{item.askprice}</td>
+                                    <td>{item.highprice}</td>
+                                    <td>{item.lowprice}</td>
+                                    <td>{item.lastprice}</td>
+                                    <td>{item.executedqty}</td>
+                                    <td>{item.totalexecutedqty}</td>
+                                    <td>{item.avgprice}</td>
+                                    <td>{item.isopen === 'Y' ? 'Open' : 'Closed'}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     );
 };

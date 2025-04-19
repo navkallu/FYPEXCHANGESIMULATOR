@@ -1,8 +1,11 @@
 import React from "react";
+import { useAuth } from "../context/AuthContext";
 import "./Home.css";
 
 const Home = () => {
-    // Sample data for most active stocks
+    const { user } = useAuth();
+    
+    // Your existing dummy data
     const mostActiveStocks = [
         {
             exchange: "HK",
@@ -49,7 +52,7 @@ const Home = () => {
     return (
         <div className="home-container">
             <div className="welcome-section">
-                <h1>Welcome, John!</h1>
+                <h1>Welcome, {user ? `${user.first_name}${user.last_name ? ` ${user.last_name}` : ''}` : 'Guest'}!</h1>
             </div>
 
             <div className="active-stocks-section">
