@@ -1,53 +1,49 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import "./Home.css";
 
 const Home = () => {
     const { user } = useAuth();
-    
-    // Your existing dummy data
-    const mostActiveStocks = [
-        {
-            exchange: "HK",
-            symbol: "001.HK",
-            totalQuantity: 125000,
-            avgPrice: 45.67,
-            isOpen: true,
-            sender: "User123"
-        },
-        {
-            exchange: "HK",
-            symbol: "002.HK",
-            totalQuantity: 98700,
-            avgPrice: 32.15,
-            isOpen: false,
-            sender: "User456"
-        },
-        {
-            exchange: "HK",
-            symbol: "003.HK",
-            totalQuantity: 75400,
-            avgPrice: 28.90,
-            isOpen: true,
-            sender: "User789"
-        },
-        {
-            exchange: "HK",
-            symbol: "004.HK",
-            totalQuantity: 63200,
-            avgPrice: 15.25,
-            isOpen: true,
-            sender: "User101"
-        },
-        {
-            exchange: "HK",
-            symbol: "005.HK",
-            totalQuantity: 52100,
-            avgPrice: 42.30,
-            isOpen: false,
-            sender: "User202"
+    const [marketData, setMarketData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Fetch market data from API
+    const fetchMarketData = async () => {
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch("http://localhost:3001/marketdata");
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch market data');
+            }
+
+            const data = await response.json();
+            // Sort by executed quantity in descending order and take top 5
+            const sortedData = data
+                .sort((a, b) => b.executedqty - a.executedqty)
+                .slice(0, 5);
+            setMarketData(sortedData);
+        } catch (err) {
+            setError(err.message);
+            console.error("Error fetching market data:", err);
+        } finally {
+            setIsLoading(false);
         }
-    ];
+    };
+
+    useEffect(() => {
+        // Fetch immediately on mount
+        fetchMarketData();
+
+        // Set up interval to refresh every 2 seconds
+        const intervalId = setInterval(fetchMarketData, 2000);
+
+        // Clean up interval on unmount
+        return () => clearInterval(intervalId);
+    }, []);
 
     return (
         <div className="home-container">
@@ -58,37 +54,40 @@ const Home = () => {
             <div className="active-stocks-section">
                 <h2>Most Active Stocks</h2>
 
-                <div className="table-container">
-                    <table className="active-stocks-table">
-                        <thead>
-                            <tr>
-                                <th className="tablehead">Exchange</th>
-                                <th className="tablehead">Stock Symbol</th>
-                                <th className="tablehead">Total Executed Quantity</th>
-                                <th className="tablehead">Average Price</th>
-                                <th className="tablehead">Is Open</th>
-                                <th className="tablehead">Order Sender</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {mostActiveStocks.map((stock, index) => (
-                                <tr key={index}>
-                                    <td className="tablehead">{stock.exchange}</td>
-                                    <td className="tablehead">{stock.symbol}</td>
-                                    <td className="tablehead">{stock.totalQuantity.toLocaleString()}</td>
-                                    <td className="tablehead">{stock.avgPrice.toFixed(2)}</td>
-                                    <td className="tablehead">
-                                        <span className={`status ${stock.isOpen ? 'open' : 'closed'}`}>
-                                            {stock.isOpen ? 'Open' : 'Closed'}
-                                        </span>
-                                    </td>
-                                    <td className="tablehead">{stock.sender}</td>
+                {isLoading ? (
+                    <div className="loading">Loading market data...</div>
+                ) : error ? (
+                    <div className="error">Error: {error}</div>
+                ) : (
+                    <div className="table-container">
+                        <table className="active-stocks-table">
+                            <thead>
+                                <tr>
+                                    <th className="tablehead">Exchange</th>
+                                    <th className="tablehead">Stock Symbol</th>
+                                    <th className="tablehead">Executed Quantity</th>
+                                    <th className="tablehead">Last Price</th>
+                                    <th className="tablehead">Status</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-                <a href="http://" className="orderbutton" target="_blank" rel="noopener noreferrer">Order Sender</a>
+                            </thead>
+                            <tbody>
+                                {marketData.map((item, index) => (
+                                    <tr key={index}>
+                                        <td className="tablehead">{item.exchange}</td>
+                                        <td className="tablehead">{item.symbol}</td>
+                                        <td className="tablehead">{item.executedqty}</td>
+                                        <td className="tablehead">{item.lastprice}</td>
+                                        <td className="tablehead">
+                                            <span className={`status ${item.isopen === 'Y' ? 'open' : 'closed'}`}>
+                                                {item.isopen === 'Y' ? 'Open' : 'Closed'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         </div>
     );

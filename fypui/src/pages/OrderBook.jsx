@@ -13,6 +13,26 @@ const OrderBook = () => {
     // const { token } = useAuth();
 
 
+    const fetchOrderBookData = async () => {
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch("http://localhost:3001/orderbook");
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch order book data');
+            }
+
+            const data = await response.json();
+            setOrderBookData(data);
+        } catch (err) {
+            setError(err.message);
+            console.error("Error fetching order book:", err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
     // Fetch order book data from API
     useEffect(() => {
         // const fetchOrderBookData = async () => {
@@ -39,31 +59,21 @@ const OrderBook = () => {
         //         setIsLoading(false);
         //     }
         // };
-        const fetchOrderBookData = async () => {
-            setIsLoading(true);
-            setError(null);
 
-            try {
-                const response = await fetch("http://localhost:3001/orderbook");
 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch order book data');
-                }
+        // if (selectedTab === "orderbook") {
+        //     fetchOrderBookData();
+        // }
 
-                const data = await response.json();
-                setOrderBookData(data);
-            } catch (err) {
-                setError(err.message);
-                console.error("Error fetching order book:", err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+        // Fetch immediately on mount
+        fetchOrderBookData();
 
-        if (selectedTab === "orderbook") {
-            fetchOrderBookData();
-        }
-    }, [selectedTab]);
+        // Set up interval to refresh every 2 seconds
+        const intervalId = setInterval(fetchOrderBookData, 2000);
+
+        // Clean up interval on unmount
+        return () => clearInterval(intervalId);
+    }, []);
 
     // Parse the stringified order arrays
     const parseOrders = (ordersString) => {

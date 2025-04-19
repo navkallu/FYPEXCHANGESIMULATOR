@@ -8,6 +8,28 @@ const MarketData = () => {
     const [error, setError] = useState(null);
     // const { token } = useAuth();
 
+
+    const fetchMarketData = async () => {
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch("http://localhost:3001/marketdata");
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch market data');
+            }
+
+            const data = await response.json();
+            setMarketData(data);
+        } catch (err) {
+            setError(err.message);
+            console.error("Error fetching market data:", err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // Fetch market data from API
     // useEffect(() => {
     //     const fetchMarketData = async () => {
@@ -40,28 +62,13 @@ const MarketData = () => {
     //     }
     // }, [token]);
     useEffect(() => {
-        const fetchMarketData = async () => {
-            setIsLoading(true);
-            setError(null);
-
-            try {
-                const response = await fetch("http://localhost:3001/marketdata");
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch market data');
-                }
-
-                const data = await response.json();
-                setMarketData(data);
-            } catch (err) {
-                setError(err.message);
-                console.error("Error fetching market data:", err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         fetchMarketData();
+
+        // Set up interval to refresh every 2 seconds
+        const intervalId = setInterval(fetchMarketData, 2000);
+
+        // Clean up interval on unmount
+        return () => clearInterval(intervalId);
     }, []); // Empty dependency array means this runs once on mount
 
     return (
