@@ -1,3 +1,4 @@
+const cors = require("cors");
 const express = require("express");
 const { Pool } = require("pg");
 const bcrypt = require("bcrypt");
@@ -6,6 +7,14 @@ require("dotenv").config();
 
 const app = express();
 app.use(express.json());
+
+app.use(cors({
+    origin: 'http://localhost:3000',  // Your frontend origin
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 
 // PostgreSQL Connection
 const pool = new Pool({
@@ -144,7 +153,7 @@ app.get("/profile", authenticateToken, async (req, res) => {
 });
 
 // Protected Routes
-app.get("/orderbook", authenticateToken, async (req, res) => {
+app.get("/orderbook", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM orderbook");
         res.json(result.rows);
@@ -154,7 +163,7 @@ app.get("/orderbook", authenticateToken, async (req, res) => {
     }
 });
 
-app.get("/marketdata", authenticateToken, async (req, res) => {
+app.get("/marketdata", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM marketdata");
         res.json(result.rows);

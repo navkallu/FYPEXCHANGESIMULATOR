@@ -1,25 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import './marketdata.css';
-import { useAuth } from '../context/AuthContext';
+// import { useAuth } from '../context/AuthContext';
 
 const MarketData = () => {
     const [marketData, setMarketData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { token } = useAuth();
+    // const { token } = useAuth();
 
     // Fetch market data from API
+    // useEffect(() => {
+    //     const fetchMarketData = async () => {
+    //         setIsLoading(true);
+    //         setError(null);
+
+    //         try {
+    //             const response = await fetch("http://localhost:3001/marketdata", {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${token}`
+    //                 }
+    //             });
+
+    //             if (!response.ok) {
+    //                 throw new Error('Failed to fetch market data');
+    //             }
+
+    //             const data = await response.json();
+    //             setMarketData(data);
+    //         } catch (err) {
+    //             setError(err.message);
+    //             console.error("Error fetching market data:", err);
+    //         } finally {
+    //             setIsLoading(false);
+    //         }
+    //     };
+
+    //     if (token) {
+    //         fetchMarketData();
+    //     }
+    // }, [token]);
     useEffect(() => {
         const fetchMarketData = async () => {
             setIsLoading(true);
             setError(null);
-            
+
             try {
-                const response = await fetch("http://localhost:3001/marketdata", {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const response = await fetch("http://localhost:3001/marketdata");
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch market data');
@@ -35,10 +61,8 @@ const MarketData = () => {
             }
         };
 
-        if (token) {
-            fetchMarketData();
-        }
-    }, [token]);
+        fetchMarketData();
+    }, []); // Empty dependency array means this runs once on mount
 
     return (
         <div className="container">

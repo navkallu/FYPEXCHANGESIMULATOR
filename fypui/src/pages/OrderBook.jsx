@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./orderbook.css";
 import MarketData from "./MarketData";
 import Home from "./Home";
-import { useAuth } from "../context/AuthContext";
+// import { useAuth } from "../context/AuthContext";
 
 const OrderBook = () => {
     const [selectedSymbol, setSelectedSymbol] = useState("");
@@ -10,21 +10,41 @@ const OrderBook = () => {
     const [orderBookData, setOrderBookData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const { token } = useAuth();
-    
+    // const { token } = useAuth();
+
 
     // Fetch order book data from API
     useEffect(() => {
+        // const fetchOrderBookData = async () => {
+        //     setIsLoading(true);
+        //     setError(null);
+
+        //     try {
+        //         const response = await fetch("http://localhost:3001/orderbook", {
+        //             headers: {
+        //                 'Authorization': `Bearer ${token}`
+        //             }
+        //         });
+
+        //         if (!response.ok) {
+        //             throw new Error('Failed to fetch order book data');
+        //         }
+
+        //         const data = await response.json();
+        //         setOrderBookData(data);
+        //     } catch (err) {
+        //         setError(err.message);
+        //         console.error("Error fetching order book:", err);
+        //     } finally {
+        //         setIsLoading(false);
+        //     }
+        // };
         const fetchOrderBookData = async () => {
             setIsLoading(true);
             setError(null);
-            
+
             try {
-                const response = await fetch("http://localhost:3001/orderbook", {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const response = await fetch("http://localhost:3001/orderbook");
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch order book data');
@@ -40,10 +60,10 @@ const OrderBook = () => {
             }
         };
 
-        if (token && selectedTab === "orderbook") {
+        if (selectedTab === "orderbook") {
             fetchOrderBookData();
         }
-    }, [token, selectedTab]);
+    }, [selectedTab]);
 
     // Parse the stringified order arrays
     const parseOrders = (ordersString) => {
