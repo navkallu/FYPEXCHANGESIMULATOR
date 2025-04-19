@@ -1,0 +1,136 @@
+/* App.css */
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* background-color: #1e2128;
+    color: white; */
+}
+
+.container {
+    padding: 20px;
+    background-image: url("../assets/bgimg.jpeg");
+    background-size: cover;
+    /* or contain, or specific dimensions */
+    background-position: center center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 50px;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.title::before {
+    content: '';
+    width: 30px;
+    height: 30px;
+    background-color: #00aaff;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.nav-buttons {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn {
+    background-color: #888;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    border: 1px solid;
+}
+
+.nav-btn.active {
+    background-color: #1daeff;
+}
+
+.selectors {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0 auto 30px;
+    gap: 50px;
+}
+
+.selectors div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.dropdown {
+    margin-top: 5px;
+    padding: 10px;
+    border-radius: 20px;
+    background-color: #45596b;
+    border: none;
+    color: white;
+    min-width: 150px;
+    text-align: center;
+}
+
+.order-book {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 10px 100px;
+}
+
+.orderbook-container {
+    margin: 0 auto;
+    overflow-x: auto;
+    width: 50%;
+}
+
+.order-header {
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.order-header.bid {
+    background-color: darkgreen;
+}
+
+.order-header.ask {
+    background-color: darkred;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th,
+td {
+    padding: 8px;
+    text-align: center;
+    background-color: #2f3b4c;
+    border: 1px solid #444;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #3d4a5a;
+}
