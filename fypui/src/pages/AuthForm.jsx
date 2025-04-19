@@ -24,35 +24,107 @@ const AuthForm = () => {
         setError('');
     };
 
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     setIsLoading(true);
+    //     setError('');
+
+    //     // Basic client-side validation
+    //     if (!formData.email || !formData.password) {
+    //         setError('Email and password are required');
+    //         setIsLoading(false);
+    //         return;
+    //     }
+
+    //     if (!isLogin && (!formData.firstName || !formData.lastName)) {
+    //         setError('All fields are required');
+    //         setIsLoading(false);
+    //         return;
+    //     }
+
+    //     try {
+    //         let response;
+    //         if (isLogin) {
+    //             response = await login({
+    //                 email: formData.email,
+    //                 password: formData.password
+    //             });
+    //         } else {
+    //             response = await signup({
+    //                 firstName: formData.firstName,
+    //                 lastName: formData.lastName,
+    //                 email: formData.email,
+    //                 password: formData.password
+    //             });
+    //         }
+
+    //         // Verify the response structure
+    //         if (!response || !response.token || !response.user) {
+    //             throw new Error('Invalid response from server');
+    //         }
+
+    //         // Save token and user data
+    //         localStorage.setItem('token', response.token);
+    //         localStorage.setItem('user', JSON.stringify(response.user));
+
+    //         // Redirect to dashboard or home page
+    //         navigate('/dashboard');
+    //     } catch (err) {
+    //         setError(err.message || 'An error occurred');
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
 
+        // Basic client-side validation
+        if (!formData.email || !formData.password) {
+            setError('Email and password are required');
+            setIsLoading(false);
+            return;
+        }
+
+        if (!isLogin && (!formData.firstName || !formData.lastName)) {
+            setError('All fields are required');
+            setIsLoading(false);
+            return;
+        }
+
         try {
             let response;
             if (isLogin) {
                 response = await login({
-                    email: formData.email,
+                    email: formData.email.trim(),
                     password: formData.password
                 });
+                console.log('Login response:', response.user, response.token); // Debug
             } else {
                 response = await signup({
-                    firstName: formData.firstName,
-                    lastName: formData.lastName,
-                    email: formData.email,
+                    firstName: formData.firstName.trim(),
+                    lastName: formData.lastName.trim(),
+                    email: formData.email.trim(),
                     password: formData.password
                 });
             }
 
-            // Save token and user data
+            // Verify the response structure
+            if (!response || !response.token || !response.user) {
+                throw new Error('Invalid response from server');
+            }
+
             localStorage.setItem('token', response.token);
             localStorage.setItem('user', JSON.stringify(response.user));
-            
-            // Redirect to dashboard or home page
+
             navigate('/dashboard');
         } catch (err) {
-            setError(err.message || 'An error occurred');
+            // More specific error handling
+            const errorMsg = err.message.includes('Failed to fetch')
+                ? 'Network error - could not connect to server'
+                : err.message;
+            setError(errorMsg);
         } finally {
             setIsLoading(false);
         }
@@ -142,8 +214,8 @@ const AuthForm = () => {
                             <span>Change method</span>
                         </div>
                         <div className="form-groups">
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 className="auth-button"
                                 disabled={isLoading}
                             >

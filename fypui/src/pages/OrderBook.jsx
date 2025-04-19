@@ -11,6 +11,7 @@ const OrderBook = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const { token } = useAuth();
+    
 
     // Fetch order book data from API
     useEffect(() => {
