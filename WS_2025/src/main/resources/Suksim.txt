@@ -1,0 +1,210 @@
+C:\EXSIM_SUK\2025\exchangesimulator
+
+C:\EXSIM_SUK\2025
+C:\WS_2025
+
+java -cp h2*.jar org.h2.tools.Server -tcp -tcpAllowOthers -tcpPort 9092
+
+C:\h2db>java -cp h2-2.1.214.jar org.h2.tools.Server -tcp -web -webAllowOthers -ifNotExists
+http://192.168.0.43:8082/
+CREATE TABLE IF NOT EXISTS orderbook (id BIGINT AUTO_INCREMENT PRIMARY KEY, symbol VARCHAR(10) NOT NULL, bid_orders CLOB, ask_orders CLOB)
+
+CREATE TABLE IF NOT EXISTS orderbook (symbol VARCHAR(10) NOT NULL, bid_orders CLOB, ask_orders CLOB)
+
+CREATE TABLE IF NOT EXISTS marketdata (symbol VARCHAR(10) NOT NULL, bidprice DECIMAL(15, 2), askprice DECIMAL(15, 2))
+
+CREATE TABLE marketdata (
+    symbol VARCHAR(255),
+    bidprice DECIMAL(15, 2),
+    askprice DECIMAL(15, 2),
+	highprice DECIMAL(15, 2),
+	lowprice DECIMAL(15, 2),
+	lastprice DECIMAL(15, 2)
+);
+
+
+30/03/2025
+C:\Users\User\IdeaProjects\FYPEXCHANGESIMULATOR  (Git Synchup version)
+Git Hub :https://github.com/navkallu/FYPEXCHANGESIMULATOR/tree/c79282451d5699ae2c9115e201ec18ca650dad90
+
+
+MktData:
+Symbol,BidPrice, AskPrice ,HighPrice, LowPrice,LastPrice
+
+04/04/2025
+
+
+
+Postgress
+postgres
+5432
+
+C:\Users\User>cd C:\Program Files\PostgreSQL\17\bin
+
+C:\Program Files\PostgreSQL\17\bin>SET LC_MESSAGES=en_US
+
+C:\Program Files\PostgreSQL\17\bin>psql -U postgres
+Password for user postgres:
+psql (17.4)
+Type "help" for help.
+
+postgres=#
+
+
+In psql, connect to your orderbook_db using:
+
+\c orderbook_db
+This switches the current database to orderbook_db.
+
+Verify the active database again:
+
+sql
+SELECT current_database();
+
+direct connect to DB:
+
+psql -U postgres -d orderbook_db
+
+
+node js:
+C:\h2_api>node server.js
+curl -X GET http://localhost:3000/orderbook
+
+
+
+psql -U postgres -d orderbook_db <<EOF
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+EOF
+
+
+
+
+
+
+-----------------------GUI----------------
+in Command Window:
+C:\Users\User\IdeaProjects\FYPEXCHANGESIMULATOR\fypui>cd ..
+
+C:\Users\User\IdeaProjects\FYPEXCHANGESIMULATOR>cd server
+
+C:\Users\User\IdeaProjects\FYPEXCHANGESIMULATOR\server>npm rundev
+Unknown command: "rundev"
+
+To see a list of supported npm commands, run:
+  npm help
+
+C:\Users\User\IdeaProjects\FYPEXCHANGESIMULATOR\server>npm run dev
+
+> server@1.0.0 dev
+> nodemon src/index.js
+
+[nodemon] 3.1.9
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): *.*
+[nodemon] watching extensions: js,mjs,cjs,json
+[nodemon] starting `node src/index.js`
+Server running on port 3001
+
+Another Command window
+
+C:\Users\User\IdeaProjects\FYPEXCHANGESIMULATOR\fypui>npm i
+npm start
+
+
+npm i cors
+npm run dev
+
+
+------------------------Postgres-----------------------------
+Open your terminal or command prompt.
+
+Connect to PostgreSQL as a superuser (like postgres):
+
+bash
+psql -U postgres
+Run the command inside the PostgreSQL prompt:
+
+sql
+CREATE DATABASE orderbook_db;
+If you want to verify the database creation, list all databases with:
+
+sql
+\l
+To switch to orderbook_db, use:
+
+sql
+\c orderbook_db
+
+
+postgres
+postgres
+5432
+
+C:\Users\User>cd C:\Program Files\PostgreSQL\17\bin
+
+C:\Program Files\PostgreSQL\17\bin>SET LC_MESSAGES=en_US
+
+C:\Program Files\PostgreSQL\17\bin>psql -U postgres
+Password for user postgres:
+psql (17.4)
+Type "help" for help.
+
+postgres=#
+
+
+In psql, connect to your orderbook_db using:
+
+\c orderbook_db
+This switches the current database to orderbook_db.
+
+Verify the active database again:
+
+sql
+SELECT current_database();
+
+direct connect to DB:
+
+psql -U postgres -d orderbook_db
+
+
+node js:
+C:\h2_api>node server.js
+curl -X GET http://localhost:3000/orderbook
+
+
+C:\Program Files\PostgreSQL\17\bin>psql -U postgres -d orderbook_db
+
+orderbook_db=# CREATE TABLE users (    id SERIAL PRIMARY KEY,    first_name VARCHAR(100) NOT NULL,    last_name VARCHAR(100) NOT NULL,    email VARCHAR(255) UNIQUE NOT NULL,    password VARCHAR(255) NOT NULL,    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE
+
+orderbook_db-# \c orderbook_db
+You are now connected to database "orderbook_db" as user "postgres".
+orderbook_db-# \dt
+           List of relations
+ Schema |    Name    | Type  |  Owner
+--------+------------+-------+----------
+ public | marketdata | table | postgres
+ public | orderbook  | table | postgres
+ public | users      | table | postgres
+(3 rows)
+
+orderbook_db=# select * from users;
+ id | first_name | last_name |      email      |                           password                           |         created_at
+----+------------+-----------+-----------------+--------------------------------------------------------------+----------------------------
+  1 | NAVIN      | RAI       | navin.rai@x.com | $2b$10$qH.M0h34i5xI150HCzkGvOD1QZnAeuLQd5AW.mrhi7WgE.I6AzBAK | 2025-04-19 22:23:25.526774
+(1 row)
+
+
+
+DROP TABLE IF EXISTS orderbook;
+CREATE TABLE IF NOT EXISTS orderbook (exchange VARCHAR(10), symbol VARCHAR(10) PRIMARY KEY, bid_orders TEXT,ask_orders TEXT);
+
+DROP TABLE IF EXISTS marketdata;
+CREATE TABLE IF NOT EXISTS marketdata (exchange VARCHAR(10), symbol VARCHAR(255) PRIMARY KEY, bidprice NUMERIC(15,2), askprice NUMERIC(15,2), highprice NUMERIC(15,2),lowprice NUMERIC(15,2),lastprice NUMERIC(15,2),             executedqty BIGINT,totalexecutedqty BIGINT, avgprice NUMERIC(15,2),isopen VARCHAR(10));
