@@ -13,7 +13,7 @@ set cp=%cp%;%JP%\mina-core-2.0.16.jar
 set cp=%cp%;%JP%\jackson-core-2.12.3.jar
 set cp=%cp%;%JP%\jackson-databind-2.12.3.jar
 set cp=%cp%;%JP%\jackson-annotations-2.12.3.jar
-set cp=%cp%;%JP%\h2-2.1.214.jar
+set cp=%cp%;%JP%\postgresql-42.7.5.jar
 
 
 

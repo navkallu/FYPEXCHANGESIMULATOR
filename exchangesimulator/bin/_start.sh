@@ -14,7 +14,7 @@ cp=${cp}:${jp}/mina-core-2.0.16.jar
 cp=${cp}:${jp}/jackson-core-2.12.3.jar
 cp=${cp}:${jp}/jackson-databind-2.12.3.jar
 cp=${cp}:${jp}/jackson-annotations-2.12.3.jar
-cp=${cp}:${jp}/h2-2.1.214.jar
+cp=${cp}:${jp}/postgresql-42.7.5.jar
 
 
 java -version
