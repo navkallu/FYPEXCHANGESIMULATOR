@@ -21,8 +21,11 @@ const pool = new Pool({
     host: "localhost",
     port: 5432,
     database: "orderbook_db",
-    user: "postgres",
-    password: "postgres",
+    //user: "postgres",
+    //password: "postgres",
+    user: "sukrutirai",
+    password: "",
+
 });
 
 // JWT Configuration
