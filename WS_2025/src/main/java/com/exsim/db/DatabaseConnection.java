@@ -1,5 +1,7 @@
 package com.exsim.db;
 
+import com.exsim.app.SimulatorMain;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -18,10 +20,8 @@ public class DatabaseConnection {
     public static Connection getConnection() {
         try {
             String url = "jdbc:postgresql://localhost:5432/orderbook_db";
-            //String user = "postgres";
-            //String password = "postgres";
-            String user = "sukrutirai";
-            String password = "";
+            String user = SimulatorMain.DBUSER;
+            String password = SimulatorMain.DBPASSWORD;
             System.out.println("Connecting with URL: " + url + ", user: " + user);
             return DriverManager.getConnection(url, user, password);
         } catch (Exception e) {
