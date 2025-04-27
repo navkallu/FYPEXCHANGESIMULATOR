@@ -175,6 +175,7 @@ public class ExSimApplication implements quickfix.Application {
         }
         order.cancel();
         orderMatcher.erase(order);
+        orderMatcher.displayOrderBook();
         //Create new Order
         clOrdId = getStringFieldValue(message,ClOrdID.FIELD);
         origClordId = getStringFieldValue(message,OrigClOrdID.FIELD);
@@ -248,6 +249,7 @@ public class ExSimApplication implements quickfix.Application {
         String orderId = order.getOrderId();
         order.cancel();
         orderMatcher.erase(order);
+        orderMatcher.displayOrderBook();
         order.setClientOrderId(getStringFieldValue(message,11));
         order.setOrigClientOrderId(getStringFieldValue(message,41));
         order.setOrderId(orderId);
