@@ -103,11 +103,17 @@ public class CancelReplacePanel extends JPanel {
 
     private class ReplaceListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+            if(order == null){
+                JOptionPane.showMessageDialog(null, "No Order Selected To Amend");
+            }
+
             Order newOrder = (Order) order.clone();
-            newOrder.setQuantity
-            (Integer.parseInt(quantityTextField.getText()));
-            newOrder.setLimit
-            (Double.parseDouble(limitPriceTextField.getText()));
+            //Take The Latest values from the field
+            int newQuantity = Integer.parseInt(quantityTextField.getText());
+            double newLimitPrice = Double.parseDouble(limitPriceTextField.getText());
+
+            newOrder.setQuantity(newQuantity);
+            newOrder.setLimit(newLimitPrice);
             newOrder.setRejected(false);
             newOrder.setCanceled(false);
             newOrder.setOpen(0);

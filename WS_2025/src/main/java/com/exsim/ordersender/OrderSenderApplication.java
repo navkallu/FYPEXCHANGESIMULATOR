@@ -200,8 +200,8 @@ public class OrderSenderApplication implements Application {
 
         if (fillSize.compareTo(BigDecimal.ZERO) > 0) {
             order.setOpen(order.getOpen() - (int) Double.parseDouble(fillSize.toPlainString()));
-            order.setExecuted(new Integer(message.getString(CumQty.FIELD)));
-            order.setAvgPx(new Double(message.getString(AvgPx.FIELD)));
+            order.setExecuted(Integer.parseInt(message.getString(CumQty.FIELD)));
+            order.setAvgPx(Double.parseDouble(message.getString(AvgPx.FIELD)));
         }
 
         OrdStatus ordStatus = (OrdStatus) message.getField(new OrdStatus());
@@ -234,7 +234,7 @@ public class OrderSenderApplication implements Application {
             execution.setSymbol(message.getField(new Symbol()).getValue());
             execution.setQuantity(fillSize.intValue());
             if (message.isSetField(LastPx.FIELD)) {
-                execution.setPrice(new Double(message.getString(LastPx.FIELD)));
+                execution.setPrice(Double.parseDouble(message.getString(LastPx.FIELD)));
             }
             Side side = (Side) message.getField(new Side());
             execution.setSide(FIXSideToSide(side));
@@ -460,9 +460,9 @@ public class OrderSenderApplication implements Application {
 
     Message populateCancelReplace(Order order, Order newOrder, Message message) {
 
-        if (order.getQuantity() != newOrder.getQuantity())
+        //if (order.getQuantity() != newOrder.getQuantity())
             message.setField(new OrderQty(newOrder.getQuantity()));
-        if (!order.getLimit().equals(newOrder.getLimit()))
+        //if (!order.getLimit().equals(newOrder.getLimit()))
             message.setField(new Price(newOrder.getLimit()));
         return message;
     }

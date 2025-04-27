@@ -322,6 +322,11 @@ public class ExSimApplication implements quickfix.Application {
             if(order.getLastExecutedQuantity()>0){
                 fixOrder.setChar(39,'1');
             }
+            if(order.getPrice()>0) {
+                fixOrder.setDouble(Price.FIELD, order.getPrice());
+            }
+
+
 
             //fixOrder.setDouble(LastPx.FIELD, order.getPrice());
         }
